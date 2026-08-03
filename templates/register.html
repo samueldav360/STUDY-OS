@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Study OS - Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white flex items-center justify-center h-screen selection:bg-indigo-500 selection:text-white">
+    
+    <div class="bg-gray-900 border border-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-sm mx-4">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-white">Study OS</h1>
+            <p class="text-gray-400 text-sm mt-2">Crea tu cuenta para empezar</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm mb-1.5 text-gray-400">Usuario</label>
+                    <input type="text" name="username" required class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-sm mb-1.5 text-gray-400">Contraseña</label>
+                    <input type="password" name="password1" required class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm text-white">
+                </div>
+                <div>
+                    <label class="block text-sm mb-1.5 text-gray-400">Confirmar Contraseña</label>
+                    <input type="password" name="password2" required class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm text-white">
+                </div>
+            </div>
+
+            {% if form.errors %}
+                <div class="bg-red-900/20 border border-red-900/50 text-red-400 p-3 rounded-lg mt-5 text-sm">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p class="mb-1 last:mb-0">• {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 transition-colors duration-200 text-white font-semibold py-2.5 px-4 rounded-lg mt-6 shadow-md">
+                Registrarse
+            </button>
+        </form>
+        
+        <div class="mt-6 pt-6 border-t border-gray-800 text-center">
+            <p class="text-sm text-gray-400">
+                ¿Ya tienes cuenta? 
+                <a href="{% url 'login' %}" class="text-indigo-400 hover:text-indigo-300 hover:underline transition-colors">Inicia sesión</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

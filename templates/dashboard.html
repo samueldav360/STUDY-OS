@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Study OS - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563; 
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-200 font-sans selection:bg-indigo-500 selection:text-white">
+
+    <nav class="bg-gray-900 border-b border-gray-800 p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold tracking-tight text-white">Study <span class="text-indigo-500">OS</span></h1>
+        <div class="flex items-center gap-5">
+            <span class="text-sm text-gray-400"> Racha: <strong class="text-orange-400 font-medium">{{ racha }} días</strong></span>
+            <form action="{% url 'logout' %}" method="post" class="m-0">
+                {% csrf_token %}
+                <button class="bg-transparent border border-red-900/50 text-red-400 px-4 py-1.5 rounded-lg text-sm hover:bg-red-900/30 transition-colors duration-200">Salir</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        
+        <div class="space-y-6">
+            <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+                <h3 class="font-semibold mb-4 text-white">Nueva Materia</h3>
+                <form method="post" class="flex gap-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="nueva_materia" value="1">
+                    <input type="text" name="nombre_materia" required placeholder="Ej: Matemáticas" class="bg-gray-800 border border-gray-700 p-2.5 rounded-lg w-full outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm">
+                    <button class="bg-indigo-600 px-4 rounded-lg hover:bg-indigo-500 transition-colors duration-200 text-white font-bold">+</button>
+                </form>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+                <h3 class="font-semibold mb-4 text-white">Nueva Tarea</h3>
+                <form method="post" class="space-y-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="nueva_tarea" value="1">
+                    <input type="text" name="titulo_tarea" required placeholder="Estudiar capítulo 4..." class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm">
+                    <select name="materia_id" class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm text-gray-300">
+                        {% for m in materias %}<option value="{{ m.id }}">{{ m.nombre }}</option>{% endfor %}
+                    </select>
+                    <button class="w-full bg-indigo-600 p-2.5 rounded-lg hover:bg-indigo-500 transition-colors duration-200 font-medium text-white mt-2">Añadir Tarea</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm md:col-span-1">
+            <h3 class="font-semibold mb-4 text-white">Mis Tareas</h3>
+            <div class="space-y-3 max-h-[28rem] overflow-y-auto pr-3">
+                {% for t in tareas %}
+                <div class="flex justify-between items-center bg-gray-800/50 border border-gray-700/50 p-3.5 rounded-lg transition-all {% if t.completada %} opacity-40 {% endif %}">
+                    <div>
+                        <p class="font-medium text-sm {% if t.completada %} line-through text-gray-500 {% else %} text-gray-200 {% endif %}">{{ t.titulo }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">{{ t.materia.nombre }}</p>
+                    </div>
+                    {% if not t.completada %}
+                        <a href="?completar_id={{ t.id }}" class="border border-green-500/30 text-green-400 px-3 py-1.5 rounded-md text-xs hover:bg-green-500/10 transition-colors duration-200">Hecho</a>
+                    {% else %}
+                        <span class="text-green-500/70 text-lg mr-2">✓</span>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500 text-sm">No hay tareas pendientes.</p>
+                    <p class="text-gray-600 text-xs mt-1">¡Añade una para empezar!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm text-center">
+                <h3 class="font-semibold mb-4 text-white">Pomodoro</h3>
+                <div id="timer" class="text-6xl font-mono font-light tracking-tight text-indigo-400 mb-6">25:00</div>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="iniciarTimer()" id="btn-iniciar" class="bg-indigo-600 px-6 py-2 rounded-lg hover:bg-indigo-500 transition-colors duration-200 text-white font-medium">Iniciar</button>
+                    <button onclick="resetearTimer()" class="bg-gray-800 border border-gray-700 px-5 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-gray-300">Reset</button>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">Pomodoros hoy: <span class="text-gray-300">{{ pomodoros_hoy }}</span></p>
+            </div>
+
+            <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-sm">
+                <h3 class="font-semibold mb-3 text-white">Progreso de Hoy</h3>
+                <div class="flex items-baseline justify-center gap-2 mb-4">
+                    <span class="text-4xl font-bold text-white">{{ tareas_hoy }}</span>
+                    <span class="text-sm text-gray-400">tareas completadas</span>
+                </div>
+                <div class="h-32 mt-2">
+                    <canvas id="statsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        let tiempo = 25 * 60;
+        let intervalo = null;
+        const csrfToken = '{{ csrf_token }}';
+
+        function actualizarDisplay() {
+            const mins = Math.floor(tiempo / 60);
+            const secs = tiempo % 60;
+            document.getElementById('timer').innerText = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+        }
+
+        function iniciarTimer() {
+            if (intervalo) return;
+            document.getElementById('btn-iniciar').disabled = true;
+            intervalo = setInterval(() => {
+                tiempo--;
+                actualizarDisplay();
+                if (tiempo === 0) {
+                    clearInterval(intervalo);
+                    intervalo = null;
+                    document.getElementById('btn-iniciar').disabled = false;
+                    guardarPomodoro();
+                    alert('¡Pomodoro terminado! Descansa 5 mins.');
+                    resetearTimer();
+                }
+            }, 1000);
+        }
+
+        function resetearTimer() {
+            clearInterval(intervalo);
+            intervalo = null;
+            tiempo = 25 * 60;
+            actualizarDisplay();
+            document.getElementById('btn-iniciar').disabled = false;
+        }
+
+        function guardarPomodoro() {
+            fetch('/', {
+                method: 'POST',
+                headers: {'X-CSRFToken': csrfToken, 'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'guardar_pomodoro=1'
+            }).then(() => location.reload()); 
+        }
+
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: 'Tareas Completadas',
+                    data: {{ data_tareas|safe }},
+                    backgroundColor: '#6366f1',
+                    borderColor: '#4f46e5',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 } 
+                    } 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
