@@ -53,7 +53,8 @@
                     {% csrf_token %}
                     <input type="hidden" name="nueva_tarea" value="1">
                     <input type="text" name="titulo_tarea" required placeholder="Estudiar capítulo 4..." class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm">
-                    <select name="materia_id" class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm text-gray-300">
+                    <select name="materia_id" required class="w-full bg-gray-800 border border-gray-700 p-2.5 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors text-sm text-gray-300">
+                        <option value="" disabled selected>Selecciona una materia...</option>
                         {% for m in materias %}<option value="{{ m.id }}">{{ m.nombre }}</option>{% endfor %}
                     </select>
                     <button class="w-full bg-indigo-600 p-2.5 rounded-lg hover:bg-indigo-500 transition-colors duration-200 font-medium text-white mt-2">Añadir Tarea</button>
