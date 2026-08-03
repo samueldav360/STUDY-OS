@@ -43,7 +43,7 @@ def dashboard(request):
         elif 'nueva_tarea' in request.POST:
             Tarea.objects.create(
                 titulo=request.POST['titulo_tarea'], 
-                materia_id=request.POST['materia_id'], 
+                materia_id=request.POST.get['materia_id'], 
                 usuario=request.user
             )
 
