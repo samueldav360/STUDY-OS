@@ -1,6 +1,6 @@
 # Study OS- el DLC de My life OS
 
-Study OS es básicamente mi centro de mando personal. Lo armé porque necesitaba un lugar sin distracciones para organizar mis tareas, las materias del colegio y mis sesiones de estudio. La meta principal es no volverme loco preparándome para el ICFES y asegurar mi cupo en ingeniería en la Universidad del Norte.
+Study OS es básicamente mi centro de mando personal. Lo armé porque necesitaba un lugar sin distracciones para organizar mis tareas, las materias del colegio y mis sesiones de estudio. La meta principal es no volverme loco preparándome para los examenes.
 
 Todavía le faltan detalles, y la verdad no sé si esto le sirva a alguien beacause el metodo pomodoro no es muy util que digamos para mi es mejor el metodo de 90/20, pero si simplemente quieres forzarte a tener más disciplina diaria, seguro te suma.
 
